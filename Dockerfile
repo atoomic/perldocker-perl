@@ -6,6 +6,8 @@ ADD . /build-perl/
 
 WORKDIR /build-perl
 
+RUN yum clean all
+
 RUN yum install -y \
 	expat \
 	expat-devel \

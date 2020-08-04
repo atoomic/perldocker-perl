@@ -25,7 +25,7 @@ PERL_TAG=perl-5.6.2
 
 PERL_NAME=perl56
 
-PREFIX=/usr/local/${PERL_NAME}/3rdparty/perl/${PERL_MAJOR_VERSION}
+PREFIX=/usr/local/perl/${PERL_MAJOR_VERSION}
 PERL_LIB_ROOT=${PREFIX}/lib/perl5
 
 SITE_PREFIX=/opt/${PERL_NAME}/perl5/${PERL_MAJOR_VERSION}
@@ -117,9 +117,9 @@ make install
 # this will be in our PATH by default
 echo "create symlink"
 ln -s ${PREFIX}/bin/perl${PERL_VERSION} /usr/local/bin/perl
+ls -l ${PREFIX}/bin/perl${PERL_VERSION}
 
-# ensure we are going to use the current symlink with our PATH
-[ "$(which perl)" == "/usr/local/bin/perl" ] || exit 127;
+${PREFIX}/bin/perl${PERL_VERSION} -v
 
 echo "."
 echo "*********************************"
@@ -128,7 +128,16 @@ echo "*********************************"
 
 find ${PREFIX}/bin
 
+echo "PATH: $PATH"
+
+ls -la /usr/local/bin/perl
+
+echo -n "which perl: "; which perl
+
 perl -v
+
+# ensure we are going to use the current symlink with our PATH
+[ "$(which perl)" == "/usr/local/bin/perl" ] || exit 127;
 
 echo "."
 echo "*********************************"
