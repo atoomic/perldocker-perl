@@ -9,7 +9,8 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: cpanelos/perl-compiler
+        name: perldocker/perl
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_GITHUB_TOKEN }}
         dockerfile: Dockerfile
+        tags: "5.6"
