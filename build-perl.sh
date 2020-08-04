@@ -19,9 +19,9 @@ echo "*********************************"
 
 WORKDIR="$(pwd)"
 
-PERL_VERSION=5.6.2
+PERL_VERSION=5.6.1
 PERL_MAJOR_VERSION=56
-PERL_TAG=perl-5.6.2
+PERL_TAG=perl-5.6.1
 
 PERL_NAME=perl56
 
