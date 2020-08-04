@@ -2,6 +2,13 @@
 
 set -e
 
+echo "."
+echo "*********************************"
+echo "** Current Enviornment"
+echo "*********************************"
+
+perl -v
+
 echo "*********************************"
 echo "** Start container: $0"
 echo "*********************************"
@@ -12,11 +19,11 @@ echo "*********************************"
 
 WORKDIR="$(pwd)"
 
-PERL_VERSION=5.30.0
-PERL_MAJOR_VERSION=530
-PERL_TAG=v${PERL_VERSION}
+PERL_VERSION=5.6.2
+PERL_MAJOR_VERSION=56
+PERL_TAG=perl-5.6.2
 
-PERL_NAME=cpanel
+PERL_NAME=perl56
 
 PREFIX=/usr/local/${PERL_NAME}/3rdparty/perl/${PERL_MAJOR_VERSION}
 PERL_LIB_ROOT=${PREFIX}/lib/perl5
@@ -31,42 +38,50 @@ pwd
 
 echo "."
 echo "*********************************"
-echo "** Cloning Perl Git Repository"
+echo "** Installing cpm"
 echo "*********************************"
 
+curl -fsSL --compressed https://git.io/cpm > /usr/bin/cpm
+chmod +x /usr/bin/cpm
+/usr/bin/cpm --version
 
-git clone https://github.com/Perl/perl5.git
-cd perl5
-git checkout $PERL_TAG
+# echo "."
+# echo "*********************************"
+# echo "** Cloning Perl Git Repository"
+# echo "*********************************"
+
+# git clone https://github.com/Perl/perl5.git
+# cd perl5
+# git checkout $PERL_TAG
 
 echo "."
 echo "*********************************"
-echo "** Applying custom patches"
+echo "** Downloading Perl Tarball"
 echo "*********************************"
 
-for p in $(ls ../patches/*.patch); do 
-	patch -p3 -i $p && ( echo "# Applied patch $p"; touch $p.done )
-done
+wget https://github.com/Perl/perl5/archive/$PERL_TAG.tar.gz
+tar xzf $PERL_TAG.tar.gz
+cd perl5-$PERL_TAG
+
+PERL_SOURCE_DIR=$(pwd)
+
+echo "."
+echo "*********************************"
+echo "** PatchPerl"
+echo "*********************************"
+
+perl /usr/bin/cpm install -g --no-test File::pushd Module::Pluggable Getopt::Long IO::File
+perl /usr/bin/cpm install -g --no-test Devel::PatchPerl
+perl -e "use Devel::PatchPerl; Devel::PatchPerl->patch_source( '${PERL_VERSION}', '${PERL_SOURCE_DIR}' );"
 
 echo "."
 echo "*********************************"
 echo "** Configure"
 echo "*********************************"
 
+rm -f config.sh Policy.sh ||:
+
 sh Configure -des \
-   -Dusedevel \
-   -Dcc='/usr/bin/gcc' \
-   -Dcpp='/usr/bin/cpp' \
-   -Dusemymalloc='n' \
-   -DDEBUGGING=none \
-   -Doptimize='-g3' \
-   -Accflags='-m64' \
-   -Dccflags='-DPERL_DISABLE_PMC -fPIC -DPIC' \
-   -Duseshrplib \
-   -Duselargefiles=yes \
-   -Duseposix=true \
-   -Dhint=recommended \
-   -Duseperlio=yes \
    -Dprefix=${PREFIX} \
    -Dsiteprefix=${SITE_PREFIX} \
    -Dsitebin=${SITE_PREFIX}/bin \
@@ -76,23 +91,19 @@ sh Configure -des \
    -Dvendorprefix=${PERL_LIB_ROOT} \
    -Dvendorlib=${PERL_LIB_ROOT}/vendor_lib \
    -Dprivlib=${PERL_LIB_ROOT}/${PERL_VERSION} \
+   -Dscriptdir=${PREFIX}/bin -Dscriptdirexp=${PREFIX}/bin \
+   -Dcc='/usr/bin/gcc' \
+   -Dcpp='/usr/bin/cpp' \
+   -Dusemymalloc='n' \
+   -Uinstallusrbinperl \
+   -Ui_db \
    -Dman1dir=none \
    -Dman3dir=none \
-   -Dscriptdir=${PREFIX}/bin -Dscriptdirexp=${PREFIX}/bin \
    -Dsiteman1dir=none \
    -Dsiteman3dir=none \
    -Dinstallman1dir=none \
-   -Dversiononly=no \
-   -Dinstallusrbinperl=no \
-   -DDB_File=true \
-   -Ud_dosuid \
-   -Uuserelocatableinc \
-   -Umad \
    -Uusethreads \
-   -Uusemultiplicity \
-   -Uusesocks \
-   -Uuselongdouble \
-   -Duse64bitint -Uuse64bitall
+   -Dinstallusrbinperl=no
 
 echo "."
 echo "*********************************"
@@ -105,7 +116,7 @@ make install
 
 # this will be in our PATH by default
 echo "create symlink"
-ln -s ${PREFIX}/bin/perl /usr/local/bin/perl
+ln -s ${PREFIX}/bin/perl${PERL_VERSION} /usr/local/bin/perl
 
 # ensure we are going to use the current symlink with our PATH
 [ "$(which perl)" == "/usr/local/bin/perl" ] || exit 127;
@@ -115,38 +126,9 @@ echo "*********************************"
 echo "** Check"
 echo "*********************************"
 
+find ${PREFIX}/bin
+
 perl -v
-
-echo "."
-echo "*********************************"
-echo "** Installing cpm"
-echo "*********************************"
-
-curl -fsSL --compressed https://git.io/cpm > /usr/bin/cpm
-chmod +x /usr/bin/cpm
-/usr/bin/cpm --version
-
-echo "."
-echo "*********************************"
-echo "** Installing dependencies"
-echo "*********************************"
-
-perl /usr/bin/cpm install -g --no-test --cpanfile /build-perl/cpanfile
-
-echo "."
-echo "*********************************"
-echo "** Custom patched modules..."
-echo "*********************************"
-
-# changes are merged upstream but not in the last release which is 1.19
-#     this can be removed once 1.20 is released
-echo "** Class::XSAccessor"
-cd ${WORKDIR}
-git clone https://github.com/tsee/Class-XSAccessor.git
-cd Class-XSAccessor
-perl Makefile.PL
-make
-make install
 
 echo "."
 echo "*********************************"

@@ -19,7 +19,10 @@ RUN yum install -y \
 	openssl-devel \
 	patch \
 	which \
-	wget
+	wget \
+	perl-Data-Dumper \
+	perl-Digest-MD5 \
+	perl-ExtUtils-Install
 
 VOLUME [ "/build-perl" ]
 
