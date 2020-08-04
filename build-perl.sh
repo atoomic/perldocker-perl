@@ -19,11 +19,11 @@ echo "*********************************"
 
 WORKDIR="$(pwd)"
 
-PERL_VERSION=5.6.0
-PERL_MAJOR_VERSION=56
-PERL_TAG=perl-5.6.0
+PERL_VERSION=5.5.5
+PERL_MAJOR_VERSION=55
+PERL_TAG=perl-5.005
 
-PERL_NAME=perl56
+PERL_NAME=perl55
 
 PREFIX=/usr/local/perl/${PERL_MAJOR_VERSION}
 PERL_LIB_ROOT=${PREFIX}/lib/perl5
