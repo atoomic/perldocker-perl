@@ -20,8 +20,8 @@ echo "*********************************"
 WORKDIR="$(pwd)"
 
 MAJOR=5
-MINOR=8
-RELEASE=9
+MINOR=10
+RELEASE=1
 
 PERL_VERSION=${MAJOR}.${MINOR}.${RELEASE}
 PERL_MAJOR_VERSION=${MAJOR}${MINOR}
