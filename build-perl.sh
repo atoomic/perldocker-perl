@@ -14,16 +14,20 @@ echo "** Start container: $0"
 echo "*********************************"
 
 ####################################
-## Enviornment Variables          ##
+## Environment Variables          ##
 ####################################
 
 WORKDIR="$(pwd)"
 
-PERL_VERSION=5.6.2
-PERL_MAJOR_VERSION=56
-PERL_TAG=perl-5.6.2
+MAJOR=5
+MINOR=8
+RELEASE=9
 
-PERL_NAME=perl56
+PERL_VERSION=${MAJOR}.${MINOR}.${RELEASE}
+PERL_MAJOR_VERSION=${MAJOR}${MINOR}
+PERL_TAG=perl-${MAJOR}.${MINOR}.${RELEASE}
+
+PERL_NAME=perl${MAJOR}${MINOR}
 
 PREFIX=/usr/local/perl/${PERL_MAJOR_VERSION}
 PERL_LIB_ROOT=${PREFIX}/lib/perl5
@@ -56,7 +60,7 @@ chmod +x /usr/bin/cpm
 
 echo "."
 echo "*********************************"
-echo "** Downloading Perl Tarball"
+echo "** Downloading Perl Tarball for $PERL_TAG"
 echo "*********************************"
 
 wget https://github.com/Perl/perl5/archive/$PERL_TAG.tar.gz
@@ -70,9 +74,10 @@ echo "*********************************"
 echo "** PatchPerl"
 echo "*********************************"
 
+# using system perl for patching
 perl /usr/bin/cpm install -g --no-test File::pushd Module::Pluggable Getopt::Long IO::File
 perl /usr/bin/cpm install -g --no-test Devel::PatchPerl
-perl -e "use Devel::PatchPerl; Devel::PatchPerl->patch_source( '${PERL_VERSION}', '${PERL_SOURCE_DIR}' );"
+PERL5_PATCHPERL_PATCHLEVEL=1 perl -e "use Devel::PatchPerl; Devel::PatchPerl->patch_source( '${PERL_VERSION}', '${PERL_SOURCE_DIR}' );"
 
 echo "."
 echo "*********************************"
@@ -134,7 +139,9 @@ ls -la /usr/local/bin/perl
 
 echo -n "which perl: "; which perl
 
-perl -v
+echo "---------------------"
+/usr/local/bin/perl -v
+echo "---------------------"
 
 # ensure we are going to use the current symlink with our PATH
 [ "$(which perl)" == "/usr/local/bin/perl" ] || exit 127;

@@ -1,8 +1,12 @@
 FROM centos:7
 
-ADD . /build-perl/
+#ADD . /build-perl/
 #ADD patches /build-perl/patches
-#COPY entrypoint.sh /entrypoint.sh
+
+COPY build-perl.sh /build-perl/build-perl.sh
+COPY entrypoint.sh /build-perl/entrypoint.sh
+
+COPY cpanfile /build-perl/cpanfile
 
 WORKDIR /build-perl
 
