@@ -108,7 +108,7 @@ sh Configure -des \
    -Dsiteman1dir=none \
    -Dsiteman3dir=none \
    -Dinstallman1dir=none \
-   -Uusethreads \
+   -Dusethreads \
    -Dinstallusrbinperl=no
 
 echo "."
