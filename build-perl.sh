@@ -20,12 +20,13 @@ echo "*********************************"
 WORKDIR="$(pwd)"
 
 MAJOR=5
-MINOR=10
-RELEASE=1
+MINOR=12
+RELEASE=5
 
 PERL_VERSION=${MAJOR}.${MINOR}.${RELEASE}
 PERL_MAJOR_VERSION=${MAJOR}${MINOR}
-PERL_TAG=perl-${MAJOR}.${MINOR}.${RELEASE}
+PERL_DIR=${MAJOR}.${MINOR}.${RELEASE}
+PERL_TAG=v${PERL_DIR}
 
 PERL_NAME=perl${MAJOR}${MINOR}
 
@@ -65,7 +66,7 @@ echo "*********************************"
 
 wget https://github.com/Perl/perl5/archive/$PERL_TAG.tar.gz
 tar xzf $PERL_TAG.tar.gz
-cd perl5-$PERL_TAG
+cd perl5-$PERL_DIR
 
 PERL_SOURCE_DIR=$(pwd)
 
